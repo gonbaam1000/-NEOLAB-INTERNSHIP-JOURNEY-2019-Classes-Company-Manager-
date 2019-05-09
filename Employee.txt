@@ -1,0 +1,107 @@
+using System;
+
+namespace QuanLyNhanVien
+{
+    
+    abstract class Employee
+    {
+        
+        public TheLoaiNhanVien LoaiNhanVien;
+        public string Ten;
+        protected double ThuNhap;
+        protected DateTime NgayThue;
+
+        public abstract double TinhLuong();
+        public abstract Employee NangCao(double Thunhapmoi = 500);
+    }
+
+    // nhân viên du?c tr? b?ng h
+    class HourlyEmployee : Employee
+    {
+        // d?c tính du?c th?a hu?ng
+
+        // Constructor--hourlyIncome == thu nhap hang gio
+        internal HourlyEmployee(string EmployeeName, double HourlyIncome, TheLoaiNhanVien NewEmployeeType = TheLoaiNhanVien.Hourly)
+        {
+            NgayThue = DateTime.Now;
+            Ten = EmployeeName;
+            ThuNhap = HourlyIncome;
+            LoaiNhanVien = NewEmployeeType;
+            Console.WriteLine($"{Ten}, dã du?c thuê {LoaiNhanVien}, v?i thu nh?p {ThuNhap}");
+        }
+
+        // Creates the ABSTRACT methods
+        public override double TinhLuong()
+        {
+            Console.WriteLine("Ð?n bây gi? nhân viên dã: " + Math.Round(DateTime.Now.Subtract(NgayThue).TotalHours * ThuNhap, 2));
+            return ThuNhap;
+        }
+
+        public override Employee NangCao(double Thunhapmoi)
+        {
+            return new SalariedEmployee(Ten, Thunhapmoi);
+        }
+    }
+
+    class SalariedEmployee : HourlyEmployee
+    {
+        internal SalariedEmployee(string EmployeeName, double MonthlyIncome, TheLoaiNhanVien NewEmployeeType = TheLoaiNhanVien.Salaried)
+            : base(EmployeeName, MonthlyIncome, NewEmployeeType) { }
+
+        public override double TinhLuong()
+        {
+            Console.WriteLine("Ð?n bây gi? nhân viên dã: " + Math.Round(DateTime.Now.Subtract(NgayThue).TotalDays * ThuNhap / 30, 2));
+            return ThuNhap;
+        }
+
+        public override Employee NangCao(double Thunhapmoi)
+        {
+            return new Manager(Ten, ThuNhap);
+        }
+    }
+
+    class Manager : SalariedEmployee
+    {
+        internal Manager(string EmployeeName, double MonthlyIncome, double RaiseOfManager = 1.1, TheLoaiNhanVien NewEmployeeType = TheLoaiNhanVien.Manager)
+            : base(EmployeeName, MonthlyIncome * RaiseOfManager, NewEmployeeType) { }
+
+        public override Employee NangCao(double Thunhapmoi)
+        {
+            return new Executive(Ten, ThuNhap);
+        }
+    }
+
+    sealed class Executive : Manager //k? th?a t? 1 class nhung ko cho l?p nào dó k? th?a t? nó
+    {
+        internal Executive(string EmployeeName, double MonthlyIncome, double RaiseOfExecutive = 1.25)
+            : base(EmployeeName, MonthlyIncome, RaiseOfExecutive, TheLoaiNhanVien.Executive) { }
+
+        public override Employee NangCao(double Thunhapmoi)
+        {
+            Console.WriteLine("KO có ch?c v? cao hon!!!");
+            return this;
+        }
+    }
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Company Huyhoang = new Company(2500, 100);
+
+            Huyhoang.Thue("Kim Hoa", TheLoaiNhanVien.Hourly);
+            Huyhoang.Thue("Thu Thuy", TheLoaiNhanVien.Hourly);
+            Huyhoang.Thue("Ngoc Nhan", TheLoaiNhanVien.Salaried);
+            Huyhoang.Thue("Van Ha", TheLoaiNhanVien.Manager);
+            Huyhoang.Thue("Thanh Luan", TheLoaiNhanVien.Executive);
+
+            Huyhoang.SaThai("Van Ha", TheLoaiNhanVien.Manager);
+            Huyhoang.Thue("Thanh Luan", TheLoaiNhanVien.Executive);
+
+            Huyhoang.NangCao("Kim Hoa", TheLoaiNhanVien.Hourly);
+            Huyhoang.NangCao("Ngoc Nhan", TheLoaiNhanVien.Salaried);
+
+            Huyhoang.HienThiThongTinNhanVien();
+            Console.ReadKey();
+        }
+    }
+}
