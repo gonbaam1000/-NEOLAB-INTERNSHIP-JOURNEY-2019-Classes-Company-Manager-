@@ -1,0 +1,27 @@
+using System;
+
+namespace CompanyManager
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Company Huyhoang = new Company(2500, 100);
+
+            Huyhoang.Thue("Kim Hoa", TheLoaiNhanVien.Hourly);
+            Huyhoang.Thue("Thu Thuy", TheLoaiNhanVien.Hourly);
+            Huyhoang.Thue("Ngoc Nhan", TheLoaiNhanVien.Salaried);
+            Huyhoang.Thue("Van Ha", TheLoaiNhanVien.Manager);
+            Huyhoang.Thue("Thanh Luan", TheLoaiNhanVien.Executive);
+
+            //Huyhoang.SaThai("Van Ha", TheLoaiNhanVien.Manager);
+            Huyhoang.Sathai("Thanh Luan", TheLoaiNhanVien.Executive);
+
+            Huyhoang.NangCao("Kim Hoa", TheLoaiNhanVien.Hourly);
+            Huyhoang.NangCao("Ngoc Nhan", TheLoaiNhanVien.Salaried);
+
+            Huyhoang.HienThiThongTinNhanVien();
+            Console.ReadKey();
+        }
+    }
+}

@@ -1,0 +1,103 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using QuanLyNhanVien;
+
+namespace CompanyManager
+{
+    class Company
+    {
+        private List<Employee> CompanyEmployeesList;
+        private readonly double BasicMonthlyIncome, BasicHourlyIncome;
+
+        public string Ten { get; private set; }
+
+        public Company(double CompanyMonthlyIncome, double CompanyHourlyIncome)
+        {
+            BasicHourlyIncome = CompanyHourlyIncome;
+            BasicMonthlyIncome = CompanyMonthlyIncome;
+            CompanyEmployeesList = new List<Employee>();
+        }
+
+        public void Thue(Employee NewEmployee)
+        {
+            CompanyEmployeesList.Add(NewEmployee);
+        }
+
+        public void Thue(string Name, TheLoaiNhanVien LoaiNhanVien = TheLoaiNhanVien.Hourly, double ThuNhapMoi = 0)
+        {
+            if (ThuNhapMoi == 0)
+            {
+                ThuNhapMoi = (LoaiNhanVien == TheLoaiNhanVien.Hourly) ? BasicHourlyIncome : BasicMonthlyIncome;
+            }
+
+            switch (LoaiNhanVien)
+            {
+                case TheLoaiNhanVien.Hourly:
+                default:
+                    Thue(new HourlyEmployee(Ten, ThuNhapMoi));
+                    break;
+                case TheLoaiNhanVien.Salaried:
+                    Thue(new QuanLyNhanVien.SalariedEmployee(Ten, ThuNhapMoi));
+                    break;
+                case TheLoaiNhanVien.Manager:
+                    Thue(new Manager(Ten, ThuNhapMoi));
+                    break;
+                case TheLoaiNhanVien.Executive:
+                    Thue(new Executive(Ten, ThuNhapMoi));
+                    break;
+            }
+        }
+
+        private void Thue(SalariedEmployee salariedEmployee)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Sathai(string Ten, TheLoaiNhanVien LoaiNhanVien = TheLoaiNhanVien.Hourly)
+        {
+            foreach (Employee WorkingEmployee in CompanyEmployeesList)
+            {
+                if (WorkingEmployee.EmployeeType == LoaiNhanVien && WorkingEmployee.Ten == Ten)
+                {
+                    Console.WriteLine($"{Ten}, la nguoi {LoaiNhanVien}, da bi sa thai");
+                    CompanyEmployeesList.Remove(WorkingEmployee);
+                    return;
+                }
+            }
+            Console.WriteLine("ko tim thay nhan vien thich hop");
+        }
+
+        public void NangCao(string Ten, TheLoaiNhanVien LoaiNhanVien = TheLoaiNhanVien.Hourly)
+        {
+            for (int EmployeeIndex = 0; EmployeeIndex < CompanyEmployeesList.Count; EmployeeIndex++)
+            {
+                if (CompanyEmployeesList[EmployeeIndex].LoaiNhanVien == LoaiNhanVien && CompanyEmployeesList[EmployeeIndex].Ten == Ten)
+                {//List<Employee>Company.CompanyEmployeeList
+                    CompanyEmployeesList[EmployeeIndex] = CompanyEmployeesList[EmployeeIndex].NangCao();
+                    return;
+                }
+            }
+            Console.WriteLine("ko tim thay nhan vien thich hop");
+        }
+
+        public void HienThiThongTinNhanVien(string Ten = "tat ca nhan vien")
+        {
+            foreach (Employee WorkingEmployee in CompanyEmployeesList)
+            {
+                if (Ten.Equals("tat ca nhan vien") || WorkingEmployee.Ten == Ten)
+                {
+                    Console.WriteLine($"{WorkingEmployee.Ten}, la {WorkingEmployee.EmployeeType}, va lam {WorkingEmployee.TinhLuong()}");
+                }
+            }
+        }
+    }
+
+    enum TheLoaiNhanVien
+    {
+        Hourly,
+        Salaried,
+        Manager,
+        Executive
+    }
+}
